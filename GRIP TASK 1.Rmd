@@ -1,0 +1,94 @@
+---
+output: html_document
+---
+# Task 1:Prediction using Supervised ML
+## SIMPLE LINEAR REGRESSION
+
+### *By SRUSHTI S. SALI*
+
+### Objective: To predict the score of a student based on the no. of study hours
+
+
+
+
+***Reading the Data***
+
+```{r}
+url="http://bit.ly/w-data"
+data_s<-read.csv(url)
+head(data_s)
+dim(data_s)
+summary(data_s)
+```
+
+
+***Plotting the data points and computing correlation coefficient***
+
+```{r}
+X<-data_s$Hours
+Y<-data_s$Scores
+plot(X,Y,xlab="Hours Studied", ylab="Percentage Score", main = "Hours vs Percentage")
+```
+
+The scatter plot shows that there is strong positive correlation between the two variables.
+```{r}
+cor(X,Y)
+```
+The correlation coefficient is `r cor(X,Y)`, which indicates the strong positive correlation, i.e. more the no. of hours studied, more is the percentage score.
+
+
+***Preparing the Data***
+
+```{r}
+dt<-sort(sample(nrow(data_s),nrow(data_s)*0.8))
+data_train=data_s[dt,]
+data_test=data_s[-dt,]
+```
+
+
+***Training the algorithm***
+
+```{r}
+model<-lm(Scores~Hours, data = data_train)
+s=summary(model)
+s
+coefficients(model)
+```
+
+Thus,the model is (Percentage Score)= `r s$coefficients[1]`+`r s$coefficients[2]`(Hours Studied)
+
+```{r}
+s$r.squared
+```
+
+*The value of coefficient of determination is `r s$r.squared`, which indicates that the model is a good fit.*
+
+
+***Scatter plot with the line of regression***
+
+```{r, echo=FALSE}
+plot(X,Y, xlab="Hours Studied", ylab="Percentage Score", main = "Hours vs Percentage", col="Red", pch=19)
+abline(model, col="Black")
+```
+
+
+***Making Predictions***
+
+```{r}
+X_test=data_test[1]
+Y_test=data_test[2]
+Y_pred=predict(model,X_test)
+data_p=data.frame("Actual"=Y_test, "Predicted_Sores"=Y_pred)
+data_p
+```
+
+
+***Predicting score of a student who studied for 9.25 hours/day***
+
+```{r}
+h=data.frame(Hours=9.25)
+predicted_score=predict(model,h)
+predicted_score
+```
+**`r round(predicted_score,2)` is the predicted score of a student who studied for 9.25 hours/day.**
+
